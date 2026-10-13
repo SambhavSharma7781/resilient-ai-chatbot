@@ -1,0 +1,22 @@
+# Render Blueprint: backend as a free Docker web service.
+services:
+  - type: web
+    name: resilient-chatbot-api
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: GEMINI_API_KEYS
+        sync: false
+      - key: GROQ_API_KEYS
+        sync: false
+      - key: OPENROUTER_API_KEYS
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: DEMO_OUTAGE_KEY
+        value: "true"

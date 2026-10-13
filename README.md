@@ -7,7 +7,7 @@ A full-stack, multi-turn AI chatbot built on a **LiteLLM gateway** that keeps an
 | **Live app (frontend)** | `https://<FRONTEND_URL>` |
 | **API base URL (backend)** | `https://<BACKEND_URL>`  ·  [`/docs`](https://<BACKEND_URL>/docs)  ·  [`/api/health`](https://<BACKEND_URL>/api/health) |
 | **Stack** | Next.js 16 (App Router, TypeScript, Tailwind) · FastAPI · LiteLLM Router · Redis (Upstash) |
-| **Hosting** | Vercel (frontend) · Hugging Face Spaces, Docker (backend) |
+| **Hosting** | Vercel (frontend) · Render, Docker (backend) |
 
 > The free backend host sleeps when idle. The UI wakes it on page load and shows "Waking backend…", so the first visit after a quiet period can take up to a minute.
 
@@ -28,7 +28,7 @@ A full-stack, multi-turn AI chatbot built on a **LiteLLM gateway** that keeps an
 | **Auto-fallback on 429 / quota / 5xx** | Router retries across the pool; failing keys enter a cooldown and are skipped | `test_failover_*`, `test_bad_key_enters_cooldown_and_is_skipped`, `test_auth_error_also_fails_over` |
 | **No broken error screen** | All-keys-down returns a friendly `503` JSON message; the UI renders it as a chat bubble with **Try again**; a global handler hides stack traces | `test_all_providers_down_gives_friendly_503`, browser outage test |
 | **LiteLLM built-in response caching** | `litellm.Cache` (Redis, or memory when no Redis) enabled through `Router(cache_responses=True)` | `test_repeat_request_is_served_from_cache`, `test_cache_is_shared_across_keys` |
-| Deployed frontend + backend, connected | Vercel + Hugging Face Space, CORS locked to the frontend origin | live URLs above |
+| Deployed frontend + backend, connected | Vercel + Render web service, CORS locked to the frontend origin | live URLs above |
 
 ---
 
@@ -36,7 +36,7 @@ A full-stack, multi-turn AI chatbot built on a **LiteLLM gateway** that keeps an
 
 ```mermaid
 flowchart LR
-  U["Browser<br/>Next.js on Vercel"] -- "POST /api/chat" --> API["FastAPI<br/>Hugging Face Space (Docker)"]
+  U["Browser<br/>Next.js on Vercel"] -- "POST /api/chat" --> API["FastAPI<br/>Render (Docker)"]
   API <--> S[("Session history<br/>Redis")]
   API --> R["LiteLLM Router<br/>one model group: chat"]
   R <--> C[("LiteLLM response cache<br/>Redis")]
@@ -162,11 +162,11 @@ Also exercised manually end to end: a real Redis (sessions **and** cache survive
 
 ## Deployment
 
-**Backend → Hugging Face Space (Docker).** Create a Space with SDK *Docker* (blank). Add the variables from `.env.example` as **Secrets** (`*_API_KEYS`, `REDIS_URL`) and **Variables** (`ALLOWED_ORIGINS`, `DEMO_OUTAGE_KEY`, …). The [`deploy-backend-hf`](.github/workflows/deploy-backend-hf.yml) workflow pushes `backend/` to the Space on every change to `main`. The container listens on `$PORT` (7860).
+**Backend → Render (Docker, free).** New → Web Service → connect this repo, **Root Directory** `backend`, **Runtime** Docker, **Instance** Free. Add the variables from `.env.example` as environment variables (`*_API_KEYS`, `REDIS_URL`, `ALLOWED_ORIGINS`, `DEMO_OUTAGE_KEY`, …). Render injects `$PORT` and redeploys on every push to `main`; no card is needed on the free plan. [`render.yaml`](render.yaml) describes the same setup.
 
-**Frontend → Vercel.** Import the repo, set **Root Directory** to `frontend`, add `NEXT_PUBLIC_API_BASE_URL` = the Space URL.
+**Frontend → Vercel.** Import the repo, set **Root Directory** to `frontend`, add `NEXT_PUBLIC_API_BASE_URL` = the Render service URL.
 
-The Space can sleep after 48 h of inactivity on the free tier; an external uptime ping on `/api/health` keeps it warm, and the UI handles a cold start gracefully either way.
+Render's free web services spin down after 15 minutes without traffic and take roughly a minute to wake; an external uptime ping on `/api/health` every ~10 minutes keeps the service warm, and the UI shows a "waking up" state and retries if it is cold anyway.
 
 ## Security notes
 

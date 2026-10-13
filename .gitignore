@@ -1,0 +1,26 @@
+# secrets: never commit
+.env
+.env.*
+!.env.example
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# node / next
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# misc
+.DS_Store
+*.log
+.vercel
+
+# scaffold-generated agent notes
+frontend/AGENTS.md
+frontend/CLAUDE.md

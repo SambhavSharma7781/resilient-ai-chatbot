@@ -1,0 +1,6 @@
+# Direct dependencies, pinned. LiteLLM is pinned to a release that has been public for weeks:
+# versions 1.82.7 and 1.82.8 were malicious (PyPI supply-chain attack, 24 Mar 2026). Never use a floating range.
+litellm==1.100.0
+fastapi==0.143.0
+uvicorn[standard]==0.54.0
+redis==8.1.0

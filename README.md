@@ -4,8 +4,8 @@ A full-stack, multi-turn AI chatbot built on a **LiteLLM gateway** that keeps an
 
 | | |
 |---|---|
-| **Live app (frontend)** | `https://<FRONTEND_URL>` |
-| **API base URL (backend)** | `https://<BACKEND_URL>`  ·  [`/docs`](https://<BACKEND_URL>/docs)  ·  [`/api/health`](https://<BACKEND_URL>/api/health) |
+| **Live app (frontend)** | [https://resilient-ai-chatbot.vercel.app](https://resilient-ai-chatbot.vercel.app) |
+| **API base URL (backend)** | [https://resilient-chatbot-api.onrender.com](https://resilient-chatbot-api.onrender.com)  ·  [`/docs`](https://resilient-chatbot-api.onrender.com/docs)  ·  [`/api/health`](https://resilient-chatbot-api.onrender.com/api/health) |
 | **Stack** | Next.js 16 (App Router, TypeScript, Tailwind) · FastAPI · LiteLLM Router · Redis (Upstash) |
 | **Hosting** | Vercel (frontend) · Render, Docker (backend) |
 

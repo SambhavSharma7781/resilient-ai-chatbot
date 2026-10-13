@@ -24,7 +24,7 @@ A full-stack, multi-turn AI chatbot built on a **LiteLLM gateway** that keeps an
 | **Token usage per request** (input / output) | `metadata.input_tokens`, `output_tokens`, taken from that request's own `usage` | `test_multi_turn_memory_and_per_request_tokens` (counts differ per turn, never a running total) |
 | Optional system prompt | Panel in the header; stored per session, sent with every turn | `test_system_prompt_is_applied_and_persists` |
 | Multi-turn state | Session history in Redis (TTL), in-memory fallback; last 20 messages sent to the model | `test_multi_turn_memory_and_per_request_tokens`, restart test (below) |
-| **Key pool across models/providers** | One LiteLLM `Router` model group, one deployment per key, Gemini → Groq → OpenRouter by priority | `test_failover_walks_past_429_quota_and_5xx` |
+| **Key pool across models/providers** | One LiteLLM `Router` model group, one deployment per key, Groq → Gemini → OpenRouter by priority | `test_failover_walks_past_429_quota_and_5xx` |
 | **Auto-fallback on 429 / quota / 5xx** | Router retries across the pool; failing keys enter a cooldown and are skipped | `test_failover_*`, `test_bad_key_enters_cooldown_and_is_skipped`, `test_auth_error_also_fails_over` |
 | **No broken error screen** | All-keys-down returns a friendly `503` JSON message; the UI renders it as a chat bubble with **Try again**; a global handler hides stack traces | `test_all_providers_down_gives_friendly_503`, browser outage test |
 | **LiteLLM built-in response caching** | `litellm.Cache` (Redis, or memory when no Redis) enabled through `Router(cache_responses=True)` | `test_repeat_request_is_served_from_cache`, `test_cache_is_shared_across_keys` |
@@ -40,8 +40,8 @@ flowchart LR
   API <--> S[("Session history<br/>Redis")]
   API --> R["LiteLLM Router<br/>one model group: chat"]
   R <--> C[("LiteLLM response cache<br/>Redis")]
-  R -- "priority 1" --> G["Gemini key(s)"]
-  R -- "priority 2" --> Q["Groq key(s)"]
+  R -- "priority 1" --> Q["Groq key(s)"]
+  R -- "priority 2" --> G["Gemini key(s)"]
   R -- "priority 3" --> O["OpenRouter key(s)"]
 ```
 
@@ -130,7 +130,7 @@ The test suite below needs no keys at all.
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `GEMINI_API_KEYS`, `GROQ_API_KEYS`, `OPENROUTER_API_KEYS` | – | Comma-separated keys per provider; priority is in that order |
+| `GEMINI_API_KEYS`, `GROQ_API_KEYS`, `OPENROUTER_API_KEYS` | – | Comma-separated keys per provider; priority is Groq, then Gemini, then OpenRouter |
 | `GEMINI_MODEL`, `GROQ_MODEL`, `OPENROUTER_MODEL` | see `.env.example` | LiteLLM model strings (free-tier names change, so they are overridable without code changes) |
 | `REDIS_URL` | – | `rediss://…` for cache **and** sessions; empty = in-memory |
 | `ALLOWED_ORIGINS` | `*` | Comma-separated browser origins; set to the Vercel URL in production |

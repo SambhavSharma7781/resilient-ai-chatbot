@@ -4,8 +4,8 @@ services:
     name: resilient-chatbot-api
     runtime: docker
     plan: free
-    rootDir: backend
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     healthCheckPath: /api/health
     envVars:
       - key: GEMINI_API_KEYS

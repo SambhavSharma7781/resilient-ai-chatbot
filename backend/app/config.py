@@ -8,8 +8,8 @@ from urllib.parse import urlparse
 # (provider, env var holding comma-separated keys, env var overriding the model, default LiteLLM model string)
 # Model names change often on free tiers, so every one is overridable without a code change.
 PROVIDERS: list[tuple[str, str, str, str]] = [
-    ("gemini", "GEMINI_API_KEYS", "GEMINI_MODEL", "gemini/gemini-2.5-flash"),
     ("groq", "GROQ_API_KEYS", "GROQ_MODEL", "groq/openai/gpt-oss-120b"),
+    ("gemini", "GEMINI_API_KEYS", "GEMINI_MODEL", "gemini/gemini-3.1-flash-lite"),
     ("openrouter", "OPENROUTER_API_KEYS", "OPENROUTER_MODEL", "openrouter/nvidia/nemotron-3-super-120b-a12b:free"),
 ]
 

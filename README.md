@@ -2,6 +2,28 @@
 
 A full-stack, multi-turn AI chatbot built on a **LiteLLM gateway** that keeps answering when an API key is rate-limited, over quota or failing, and reuses **LiteLLM's built-in response cache** to cut cost and latency. Every reply carries its own metadata: where it came from, which model answered, how long it took and what it cost in tokens.
 
+## Screenshots
+
+| 1. Live answer via backup key (failover) | 2. Multi-turn memory |
+|---|---|
+| ![Failover](docs/screenshots/01-live-failover.png) | ![Memory](docs/screenshots/02-memory.png) |
+
+| 3. Same first message in a New chat → served from cache |
+|---|
+| ![Cache hit](docs/screenshots/03-cache-hit.png) |
+
+## How to see the cache
+
+The cache key is a hash of the **full conversation** (system prompt + history + new message), not just the last message.
+
+1. Send a fresh question → `LIVE_INFERENCE` (real model call, tokens billed).
+2. Click **New chat** and send the *exact same first message* → `LLM_CACHE` (~5 ms, `0 billed`, original token counts shown).
+3. Asking the same question again *inside the same chat* is live on purpose, because the history is different now.
+
+Cached replies live in Redis (LiteLLM response cache) for 1 hour (`CACHE_TTL_SECONDS`). Chat history is stored separately per session (last 20 messages, 24 h).
+
+> The word-by-word typing effect is a client-side reveal of the finished reply, not true token streaming.
+
 | | |
 |---|---|
 | **Live app (frontend)** | [https://resilient-ai-chatbot.vercel.app](https://resilient-ai-chatbot.vercel.app) |

@@ -179,5 +179,3 @@ Render's free web services spin down after 15 minutes without traffic and take r
 - Free-tier models are rate-limited and sometimes slow; the pool exists precisely because of that.
 - Cache hits require an identical conversation (see design decisions). A semantic cache (embedding similarity) would raise the hit rate at the cost of occasionally wrong reuse.
 - Streaming responses, per-user auth, and a persisted usage dashboard are natural extensions.
-
-*Built with AI assistance (Claude), as the brief allows; design, tests and verification are documented above.*

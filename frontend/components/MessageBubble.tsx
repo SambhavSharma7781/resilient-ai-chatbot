@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import "katex/dist/katex.min.css";
+import { normalizeMath } from "@/lib/math";
 import type { ChatMessage } from "@/lib/types";
 import { MetaChips } from "./MetaChips";
 import { AlertIcon, RefreshIcon } from "./icons";
@@ -79,10 +83,11 @@ export function MessageBubble({ message, onRetry, busy }: { message: ChatMessage
       <div className="max-w-[92%] min-w-0 rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3 text-[15px] shadow-sm">
         <div className="prose-chat break-words">
           <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
+            remarkPlugins={[remarkGfm, [remarkMath, { singleDollarTextMath: false }]]}
+            rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false }]]}
             components={{ a: (props) => <a {...props} target="_blank" rel="noopener noreferrer" /> }}
           >
-            {typing ? message.content.slice(0, shown) : message.content}
+            {normalizeMath(typing ? message.content.slice(0, shown) : message.content)}
           </ReactMarkdown>
         </div>
         {message.meta && !typing && (

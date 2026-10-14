@@ -17,7 +17,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 type Panel = "none" | "prompt" | "pool";
 
 export default function Chat() {
-  const { health, state, refresh, waitUntilAwake } = useBackend();
+  const { health, state, updatedAt, refresh, waitUntilAwake } = useBackend();
   // Chat is rendered client-side only (see ChatLoader), so state can initialise straight from localStorage.
   const [sessionId, setSessionId] = useState(loadSessionId);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -249,7 +249,7 @@ export default function Chat() {
               className="absolute inset-x-4 top-full z-30 -mt-1 max-h-[calc(100dvh-7.5rem)] overflow-y-auto rounded-2xl shadow-xl sm:inset-x-6"
             >
               {panel === "pool" ? (
-                <PoolPanel health={health} onRefresh={() => void refresh()} onClose={() => setPanel("none")} />
+                <PoolPanel health={health} updatedAt={updatedAt} onRefresh={refresh} onClose={() => setPanel("none")} />
               ) : (
                 <SystemPromptPanel
                   value={promptDraft}

@@ -14,6 +14,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export function useBackend() {
   const [health, setHealth] = useState<Health | null>(null);
   const [state, setState] = useState<BackendState>("connecting");
+  const [updatedAt, setUpdatedAt] = useState<number | null>(null);
   const alive = useRef(true);
 
   const refresh = useCallback(async () => {
@@ -21,6 +22,7 @@ export function useBackend() {
       const h = await getHealth();
       if (!alive.current) return true;
       setHealth(h);
+      setUpdatedAt(Date.now());
       setState(h.status === "ok" ? "ok" : "degraded");
       return true;
     } catch {
@@ -53,5 +55,5 @@ export function useBackend() {
     };
   }, [waitUntilAwake]);
 
-  return { health, state, refresh, waitUntilAwake };
+  return { health, state, updatedAt, refresh, waitUntilAwake };
 }

@@ -179,6 +179,7 @@ Also exercised manually end to end: a real Redis (sessions **and** cache survive
 2. Click **New chat** and send the **exact same first message** → the reply returns as **`LLM_CACHE`** in a few milliseconds, with **"0 billed"**.
 3. Click the status pill to open **Key pool & resilience**. The `demo-outage-key` is deliberately failing (real HTTP 429), so replies show **"Answered via backup key"** and the pool lists it in *cooldown*.
 4. Open **System prompt**, set "Answer in one sentence", **Apply**, and ask again to see it take effect (it also changes the cache key).
+5. **Verify per-request tokens.** In one chat send two messages of different length (e.g. "Hi", then "Explain TCP vs UDP in 3 short lines"). Each reply shows its own `input · output` token chip; the numbers differ per turn and are never a running total. On an `LLM_CACHE` reply the chip shows the original counts with "0 billed".
 
 ---
 

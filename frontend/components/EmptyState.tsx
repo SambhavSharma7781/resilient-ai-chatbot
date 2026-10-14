@@ -6,7 +6,7 @@ const EXAMPLES = [
 
 export function EmptyState({ onPick, disabled }: { onPick: (text: string) => void; disabled: boolean }) {
   return (
-    <div className="mx-auto flex max-w-xl flex-col items-center px-2 py-10 text-center">
+    <div className="mx-auto flex max-w-xl flex-col items-center px-2 py-6 text-center sm:py-10">
       <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-accent-soft text-accent">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.2A8 8 0 1 1 21 12z" />

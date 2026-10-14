@@ -33,6 +33,7 @@ export default function Chat() {
   const contentRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const hasMessages = useRef(false);
   const stick = useRef(true); // keep following new messages only while the reader is at the bottom
   const instant = useRef(true); // first paint of a restored chat jumps, it does not animate
 
@@ -58,7 +59,12 @@ export default function Chat() {
 
   // Scroll the message list itself (never the page) and only while the reader is following along.
   useEffect(() => {
-    if (stick.current) scrollToBottom(!instant.current);
+    hasMessages.current = messages.length > 0;
+    if (!hasMessages.current) {
+      scrollerRef.current?.scrollTo({ top: 0 }); // the welcome screen always starts at the top
+    } else if (stick.current) {
+      scrollToBottom(!instant.current);
+    }
     instant.current = false;
   }, [messages, sending, scrollToBottom]);
 
@@ -68,7 +74,7 @@ export default function Chat() {
     const scroller = scrollerRef.current;
     if (!content || !scroller) return;
     const ro = new ResizeObserver(() => {
-      if (stick.current) scroller.scrollTop = scroller.scrollHeight;
+      if (stick.current && hasMessages.current) scroller.scrollTop = scroller.scrollHeight;
     });
     ro.observe(content);
     return () => ro.disconnect();
@@ -200,31 +206,37 @@ export default function Chat() {
 
       <header className="relative z-30 shrink-0">
         <div className="relative mx-auto w-full max-w-3xl px-4 pb-3 pt-4 sm:px-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="min-w-0">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0 sm:flex-1">
               <h1 className="text-[17px] font-semibold tracking-tight">Resilient AI Chat</h1>
-              <p className="text-xs text-muted">LiteLLM key pool · automatic failover · response cache</p>
+              <p className="truncate text-xs text-muted">LiteLLM key pool · automatic failover · response cache</p>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex shrink-0 flex-nowrap items-center gap-1.5 sm:gap-2">
               <StatusPill state={state} health={health} open={panel === "pool"} onClick={(el) => toggle("pool", el)} />
               <button
                 type="button"
                 onClick={(e) => toggle("prompt", e.currentTarget)}
                 aria-expanded={panel === "prompt"}
                 aria-controls="panel-prompt"
-                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition hover:bg-surface-2 ${
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1.5 text-xs font-medium transition hover:bg-surface-2 sm:px-3 ${
                   appliedPrompt ? "border-accent/50 text-accent" : "border-line"
                 } ${panel === "prompt" ? "bg-surface-2" : ""}`}
               >
-                <SlidersIcon /> System prompt{appliedPrompt ? " · on" : ""}
+                <SlidersIcon />
+                <span className="sm:hidden">Prompt</span>
+                <span className="hidden sm:inline">System prompt</span>
+                {appliedPrompt ? " · on" : ""}
               </button>
               <button
                 type="button"
                 onClick={newChat}
                 disabled={sending}
-                className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-xs font-medium transition hover:bg-surface-2 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-2.5 py-1.5 text-xs font-medium transition hover:bg-surface-2 disabled:opacity-50 sm:px-3"
               >
-                <PlusIcon /> New chat
+                <PlusIcon />
+                <span>
+                  New<span className="hidden sm:inline"> chat</span>
+                </span>
               </button>
             </div>
           </div>
@@ -319,7 +331,7 @@ export default function Chat() {
                 }
               }}
               rows={1}
-              placeholder="Message the assistant…  (Enter to send, Shift+Enter for a new line)"
+              placeholder="Message the assistant…"
               className="max-h-42 min-h-[40px] flex-1 resize-none bg-transparent px-2 py-2 text-[15px] outline-none placeholder:text-muted"
             />
             <button
@@ -333,6 +345,7 @@ export default function Chat() {
           </form>
           <p className="mt-2 px-1 text-center text-[11px] text-muted">
             Free-tier models can be slow or wrong. Replies repeated with identical history come from cache.
+            <span className="hidden sm:inline"> Enter to send, Shift+Enter for a new line.</span>
             {draft.length > MAX_CHARS - 300 && ` · ${draft.length}/${MAX_CHARS}`}
           </p>
         </div>

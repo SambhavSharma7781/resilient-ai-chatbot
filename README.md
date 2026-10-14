@@ -188,7 +188,7 @@ Also exercised manually end to end: a real Redis (sessions **and** cache survive
 
 **Frontend → Vercel.** Import the repo, set **Root Directory** to `frontend`, add `NEXT_PUBLIC_API_BASE_URL` = the Render service URL.
 
-Render's free web services spin down after 15 minutes without traffic and take roughly a minute to wake; an external uptime ping on `/api/health` every ~10 minutes keeps the service warm, and the UI shows a "waking up" state and retries if it is cold anyway.
+Render's free web services spin down after 15 minutes without traffic and take roughly a minute to wake; an external uptime ping on `/api/health` every 5 minutes keeps the service warm, and the UI shows a "waking up" state and retries if it is cold anyway.
 
 ## Security notes
 

@@ -19,6 +19,8 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   meta?: Meta;
+  /** arrived just now in this session: animate it in (restored history is shown instantly) */
+  fresh?: boolean;
   /** friendly error shown in place of a reply */
   error?: boolean;
   /** the user text to resend when the Retry button is pressed */

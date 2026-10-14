@@ -28,6 +28,7 @@ export default function Chat() {
   const [promptDraft, setPromptDraft] = useState(loadSystemPrompt);
   const [appliedPrompt, setAppliedPrompt] = useState(loadSystemPrompt);
   const [showJump, setShowJump] = useState(false);
+  const [announce, setAnnounce] = useState("");
   const restored = useRef(false);
   const scrollerRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -131,7 +132,8 @@ export default function Chat() {
             throw e;
           }
         }
-        setMessages((m) => [...m, { id: uid(), role: "assistant", content: result.reply, meta: result.metadata }]);
+        setMessages((m) => [...m, { id: uid(), role: "assistant", content: result.reply, meta: result.metadata, fresh: true }]);
+        setAnnounce(`Assistant replied: ${result.reply}`);
         void refresh();
       } catch (e) {
         const content =
@@ -140,7 +142,7 @@ export default function Chat() {
               ? e.message
               : "I couldn't reach the server. It may still be starting up, so please try again in a few seconds."
             : "Something went wrong. Please try again.";
-        setMessages((m) => [...m, { id: uid(), role: "assistant", content, error: true, retryText: text }]);
+        setMessages((m) => [...m, { id: uid(), role: "assistant", content, error: true, retryText: text, fresh: true }]);
         void refresh();
       } finally {
         clearTimeout(slowTimer);
@@ -157,7 +159,7 @@ export default function Chat() {
       if (!text || sending || !sessionId) return;
       setDraft("");
       stick.current = true;
-      setMessages((m) => [...m, { id: uid(), role: "user", content: text }]);
+      setMessages((m) => [...m, { id: uid(), role: "user", content: text, fresh: true }]);
       void deliver(text);
     },
     [sending, sessionId, deliver],
@@ -266,7 +268,10 @@ export default function Chat() {
       </header>
 
       <div className="relative min-h-0 flex-1 border-t border-line/60">
-        <main ref={scrollerRef} onScroll={onScroll} className="relative h-full overflow-y-auto overscroll-contain" aria-live="polite" aria-label="Conversation">
+        <main ref={scrollerRef} onScroll={onScroll} className="relative h-full overflow-y-auto overscroll-contain" aria-label="Conversation">
+          <div className="sr-only" role="status" aria-live="polite">
+            {announce}
+          </div>
           <div ref={contentRef} className="mx-auto w-full max-w-3xl px-4 py-4 sm:px-6">
             {messages.length === 0 && !sending ? (
               <EmptyState onPick={submit} disabled={sending || !sessionId} />

@@ -1,7 +1,7 @@
 import type { BackendState } from "@/lib/useBackend";
 import type { Health } from "@/lib/types";
 
-export function StatusPill({ state, health, onClick, open }: { state: BackendState; health: Health | null; onClick: () => void; open: boolean }) {
+export function StatusPill({ state, health, onClick, open }: { state: BackendState; health: Health | null; onClick: (el: HTMLElement) => void; open: boolean }) {
   const healthy = health?.pool.filter((p) => p.status === "healthy").length ?? 0;
   const total = health?.pool.length ?? 0;
   const cfg = {
@@ -13,10 +13,11 @@ export function StatusPill({ state, health, onClick, open }: { state: BackendSta
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={(e) => onClick(e.currentTarget)}
+      aria-controls="panel-pool"
       aria-expanded={open}
       aria-label="Show key pool status"
-      className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition hover:opacity-90 ${cfg.cls}`}
+      className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition hover:opacity-90 ${cfg.cls} ${open ? "ring-2 ring-current/30" : ""}`}
     >
       <span className={`h-2 w-2 rounded-full ${cfg.dot}`} />
       {cfg.text}

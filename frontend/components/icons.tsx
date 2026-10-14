@@ -52,3 +52,6 @@ export const SwapIcon = (p: SVGProps<SVGSVGElement>) => (
 export const XIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}><path d="M18 6 6 18M6 6l12 12" /></svg>
 );
+export const ArrowDownIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}><path d="M12 5v14M5 12l7 7 7-7" /></svg>
+);

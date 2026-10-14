@@ -1,11 +1,11 @@
 import type { Health } from "@/lib/types";
-import { KeyIcon, RefreshIcon } from "./icons";
+import { KeyIcon, RefreshIcon, XIcon } from "./icons";
 
-export function PoolPanel({ health, onRefresh }: { health: Health | null; onRefresh: () => void }) {
+export function PoolPanel({ health, onRefresh, onClose }: { health: Health | null; onRefresh: () => void; onClose: () => void }) {
   return (
-    <section className="rounded-2xl border border-line bg-surface p-4 shadow-sm" aria-label="Key pool status">
-      <div className="flex items-center justify-between gap-3">
-        <div>
+    <section className="rounded-2xl border border-line bg-surface p-4" aria-label="Key pool status">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
           <h2 className="text-sm font-semibold">Key pool &amp; resilience</h2>
           <p className="mt-0.5 text-xs text-muted">
             Keys are tried in priority order. A key that is rate-limited or failing is skipped for a cooldown, then retried. Only labels are shown, never keys.
@@ -17,6 +17,14 @@ export function PoolPanel({ health, onRefresh }: { health: Health | null; onRefr
           className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium hover:bg-surface-2"
         >
           <RefreshIcon /> Refresh
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close key pool"
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line text-muted hover:bg-surface-2 hover:text-fg"
+        >
+          <XIcon />
         </button>
       </div>
 

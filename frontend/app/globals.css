@@ -69,6 +69,12 @@ body {
   height: 100%;
 }
 
+/* The chat is an app shell: only the message list scrolls, never the page. */
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body {
   background: var(--bg);
   color: var(--fg);
